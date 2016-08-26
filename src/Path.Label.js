@@ -1,57 +1,80 @@
-/*global LeafletLabel */
+/*global LeafletTracksymbolLabel */
 
+/**
+ *
+ */
 L.Path.include({
-	bindLabel: function (content, options) {
-		if (!this.label || this.label.options !== options) {
-			this.label = new LeafletLabel(options, this);
+	/**
+	 *
+	 * @param content
+	 * @param options
+	 * @returns {bindTracksymbolLabel}
+	 */
+	bindTracksymbolLabel: function (content, options) {
+		if (!this.tracksymbollabel || this.tracksymbollabel.options !== options) {
+			this.tracksymbollabel = new LeafletTracksymbolLabel(options, this);
 		}
 
-		this.label.setContent(content);
-
-		if (!this._showLabelAdded) {
-			this
-				.on('mouseover', this._showLabel, this)
-				.on('mousemove', this._moveLabel, this)
-				.on('mouseout remove', this._hideLabel, this);
-
-			if (L.Browser.touch) {
-				this.on('click', this._showLabel, this);
-			}
-			this._showLabelAdded = true;
-		}
+		this.tracksymbollabel.setContent(content);
 
 		return this;
 	},
 
-	unbindLabel: function () {
-		if (this.label) {
-			this._hideLabel();
-			this.label = null;
-			this._showLabelAdded = false;
-			this
-				.off('mouseover', this._showLabel, this)
-				.off('mousemove', this._moveLabel, this)
-				.off('mouseout remove', this._hideLabel, this);
+	/**
+	 *
+	 * @returns {unbindTracksymbolLabel}
+	 */
+	unbindTracksymbolLabel: function () {
+		if (this.tracksymbollabel) {
+			this._hideTracksymbolLabel();
+			this.tracksymbollabel = null;
 		}
 		return this;
 	},
 
-	updateLabelContent: function (content) {
-		if (this.label) {
-			this.label.setContent(content);
+	/**
+	 *
+	 * @param content
+	 */
+	updateTracksymbolLabelContent: function (content) {
+		if (this.tracksymbollabel) {
+		    if (typeof content === 'string' && content !== "") {
+                if (!this.tracksymbollabel.isOnMap()) {
+                    this._showTracksymbolLabel();
+                }
+                this.tracksymbollabel.setContent(content);
+            }
+            else {
+                if (this.tracksymbollabel.isOnMap()) {
+                    this._hideTracksymbolLabel();
+                }
+            }
 		}
 	},
 
-	_showLabel: function (e) {
-		this.label.setLatLng(e.latlng);
-		this._map.showLabel(this.label);
+	/**
+	 *
+	 * @param latlng
+	 */
+	_showTracksymbolLabel: function () {
+		if (this._map) {
+			this._map.showTracklayerLabel(this.tracksymbollabel);
+		}
 	},
 
-	_moveLabel: function (e) {
-		this.label.setLatLng(e.latlng);
+    /**
+     *
+     * @param latlng
+     */
+	updateTracksymolLabelLatLng: function (latlng) {
+		this.tracksymbollabel.setLatLng(latlng);
 	},
 
-	_hideLabel: function () {
-		this.label.close();
+    /**
+     *
+     * @private
+     */
+	_hideTracksymbolLabel: function () {
+		this.tracksymbollabel.close();
 	}
 });

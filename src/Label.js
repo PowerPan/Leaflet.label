@@ -1,17 +1,28 @@
-var LeafletLabel = L.Class.extend({
+/**
+ *
+ */
+var LeafletTracksymbolLabel = L.Class.extend({
 
 	includes: L.Mixin.Events,
 
+	/**
+	 *
+	 */
 	options: {
 		className: '',
 		clickable: false,
-		direction: 'right',
-		noHide: false,
+		direction: 'left',
+		noHide: true,
 		offset: [12, -15], // 6 (width of the label triangle) + 6 (padding)
 		opacity: 1,
 		zoomAnimation: true
 	},
 
+	/**
+	 *
+	 * @param options
+	 * @param source
+	 */
 	initialize: function (options, source) {
 		L.setOptions(this, options);
 
@@ -20,6 +31,10 @@ var LeafletLabel = L.Class.extend({
 		this._isOpen = false;
 	},
 
+	/**
+	 *
+	 * @param map
+	 */
 	onAdd: function (map) {
 		this._map = map;
 
@@ -52,6 +67,21 @@ var LeafletLabel = L.Class.extend({
 		}
 	},
 
+	/**
+	 *
+	 * @returns {boolean}
+	 */
+	isOnMap: function () {
+		if (this._map) {
+			return true;
+		}
+		return false;
+	},
+
+	/**
+	 *
+	 * @param map
+	 */
 	onRemove: function (map) {
 		this._pane.removeChild(this._container);
 
@@ -66,6 +96,11 @@ var LeafletLabel = L.Class.extend({
 		this._map = null;
 	},
 
+	/**
+	 *
+	 * @param latlng
+	 * @returns {LeafletTracksymbolLabel}
+	 */
 	setLatLng: function (latlng) {
 		this._latlng = L.latLng(latlng);
 		if (this._map) {
@@ -74,6 +109,11 @@ var LeafletLabel = L.Class.extend({
 		return this;
 	},
 
+	/**
+	 *
+	 * @param content
+	 * @returns {LeafletTracksymbolLabel}
+	 */
 	setContent: function (content) {
 		// Backup previous content and store new content
 		this._previousContent = this._content;
@@ -84,6 +124,9 @@ var LeafletLabel = L.Class.extend({
 		return this;
 	},
 
+	/**
+	 *
+	 */
 	close: function () {
 		var map = this._map;
 
@@ -97,6 +140,10 @@ var LeafletLabel = L.Class.extend({
 		}
 	},
 
+	/**
+	 *
+	 * @param zIndex
+	 */
 	updateZIndex: function (zIndex) {
 		this._zIndex = zIndex;
 
@@ -105,6 +152,10 @@ var LeafletLabel = L.Class.extend({
 		}
 	},
 
+	/**
+	 *
+	 * @param opacity
+	 */
 	setOpacity: function (opacity) {
 		this.options.opacity = opacity;
 
@@ -113,11 +164,19 @@ var LeafletLabel = L.Class.extend({
 		}
 	},
 
+	/**
+	 *
+	 * @private
+	 */
 	_initLayout: function () {
-		this._container = L.DomUtil.create('div', 'leaflet-label ' + this.options.className + ' leaflet-zoom-animated');
+		this._container = L.DomUtil.create('div', 'leaflet-tracksymbol-label ' + this.options.className + ' leaflet-zoom-animated');
 		this.updateZIndex(this._zIndex);
 	},
 
+	/**
+	 *
+	 * @private
+	 */
 	_update: function () {
 		if (!this._map) { return; }
 
@@ -129,6 +188,10 @@ var LeafletLabel = L.Class.extend({
 		this._container.style.visibility = '';
 	},
 
+	/**
+	 *
+	 * @private
+	 */
 	_updateContent: function () {
 		if (!this._content || !this._map || this._prevContent === this._content) {
 			return;
@@ -143,12 +206,21 @@ var LeafletLabel = L.Class.extend({
 		}
 	},
 
+	/**
+	 *
+	 * @private
+	 */
 	_updatePosition: function () {
 		var pos = this._map.latLngToLayerPoint(this._latlng);
 
 		this._setPosition(pos);
 	},
 
+	/**
+	 *
+	 * @param pos
+	 * @private
+	 */
 	_setPosition: function (pos) {
 		var map = this._map,
 			container = this._container,
@@ -160,13 +232,13 @@ var LeafletLabel = L.Class.extend({
 
 		// position to the right (right or auto & needs to)
 		if (direction === 'right' || direction === 'auto' && labelPoint.x < centerPoint.x) {
-			L.DomUtil.addClass(container, 'leaflet-label-right');
-			L.DomUtil.removeClass(container, 'leaflet-label-left');
+			L.DomUtil.addClass(container, 'leaflet-tracksymbol-label-right');
+			L.DomUtil.removeClass(container, 'leaflet-tracksymbol-label-left');
 
 			pos = pos.add(offset);
 		} else { // position to the left
-			L.DomUtil.addClass(container, 'leaflet-label-left');
-			L.DomUtil.removeClass(container, 'leaflet-label-right');
+			L.DomUtil.addClass(container, 'leaflet-tracksymbol-label-left');
+			L.DomUtil.removeClass(container, 'leaflet-tracksymbol-label-right');
 
 			pos = pos.add(L.point(-offset.x - labelWidth, offset.y));
 		}
@@ -174,18 +246,32 @@ var LeafletLabel = L.Class.extend({
 		L.DomUtil.setPosition(container, pos);
 	},
 
+	/**
+	 *
+	 * @param opt
+	 * @private
+	 */
 	_zoomAnimation: function (opt) {
 		var pos = this._map._latLngToNewLayerPoint(this._latlng, opt.zoom, opt.center).round();
 
 		this._setPosition(pos);
 	},
 
+	/**
+	 *
+	 * @private
+	 */
 	_onMoveEnd: function () {
 		if (!this._animated || this.options.direction === 'auto') {
 			this._updatePosition();
 		}
 	},
 
+	/**
+	 *
+	 * @param e
+	 * @private
+	 */
 	_onViewReset: function (e) {
 		/* if map resets hard, we must update the label */
 		if (e && e.hard) {
@@ -193,6 +279,10 @@ var LeafletLabel = L.Class.extend({
 		}
 	},
 
+	/**
+	 *
+	 * @private
+	 */
 	_initInteraction: function () {
 		if (!this.options.clickable) { return; }
 
@@ -207,6 +297,10 @@ var LeafletLabel = L.Class.extend({
 		}
 	},
 
+	/**
+	 *
+	 * @private
+	 */
 	_removeInteraction: function () {
 		if (!this.options.clickable) { return; }
 
@@ -221,6 +315,11 @@ var LeafletLabel = L.Class.extend({
 		}
 	},
 
+	/**
+	 *
+	 * @param e
+	 * @private
+	 */
 	_onMouseClick: function (e) {
 		if (this.hasEventListeners(e.type)) {
 			L.DomEvent.stopPropagation(e);
@@ -231,6 +330,11 @@ var LeafletLabel = L.Class.extend({
 		});
 	},
 
+	/**
+	 *
+	 * @param e
+	 * @private
+	 */
 	_fireMouseEvent: function (e) {
 		this.fire(e.type, {
 			originalEvent: e

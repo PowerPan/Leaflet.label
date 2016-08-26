@@ -1,3 +1,6 @@
+/**
+ *
+ */
 (function (factory, window) {
 
 	// define an AMD module that relies on 'leaflet'
@@ -11,6 +14,6 @@
 
 	// attach your plugin to the global 'L' variable
 	if (typeof window !== 'undefined' && window.L) {
-		window.LeafletLabel = factory(L);
+		window.LeafletTracksymbolLabel = factory(L);
 	}
 }(function (L) {

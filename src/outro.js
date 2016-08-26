@@ -1,2 +1,2 @@
-	return LeafletLabel;
+	return LeafletTracksymbolLabel;
 }, window));

@@ -1,5 +1,10 @@
 L.Map.include({
-	showLabel: function (label) {
+	/**
+	 *
+	 * @param label
+	 * @returns {*}
+	 */
+	showTracklayerLabel: function (label) {
 		return this.addLayer(label);
 	}
 });
