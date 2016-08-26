@@ -1,7 +1,7 @@
 var deps = {
 	Core: {
 		src: [
-			'Leaflet.label.js'
+			'leaflet-tracksymbol-label.js'
 		],
 		desc: 'The core of the plugin. Currently only includes the version.'
 	},
@@ -9,14 +9,10 @@ var deps = {
 	Label: {
 		src: [
 			'Label.js',
-			'BaseMarkerMethods.js',
-			'Marker.Label.js',
-			'CircleMarker.Label.js',
-			'Path.Label.js',
 			'Map.Label.js',
-			'FeatureGroup.Label.js'
+			'Path.Label.js',
 		],
-		desc: 'Leaflet.label plugin files.',
+		desc: 'leaflet-tracksymbol-label plugin files.',
 		deps: ['Core']
 	}
 };
